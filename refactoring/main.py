@@ -7,11 +7,16 @@ import os
 import random as rand
 from typing import Callable, Tuple
 
-"""
-Defining the Game class to make it easier to 
-understand the code further in the project
-"""
+
 def read_guess(guessed: Callable[[int, int], bool]) -> Tuple[int, int]:
+    """read guess from user
+
+    Args:
+        guessed (Callable[[int, int], bool]): gets min-max value and returns tuple
+
+    Returns:
+        Tuple[int, int]: returns guesses
+    """
     while True:
         # read the row and column
         guess_row = read_int("guess row:", max_value=5) -1
@@ -46,8 +51,32 @@ def read_int(prompt: str, min_value: int = 1, max_value: int = 5) -> int:
                 return value
         except ValueError:
                 print("Thats not number! try again!")
+
+def battleship_run() -> int:
+    """this method start game
+
+    Returns:
+        int: num of players
+    """
+    os.system("clear")
+    print("Please enter how many players are going to play:")
+    players = input("\n")
+    if len(players) > 0:
+        if int(players) < 0:
+            print("You can't have a negative amount of players. Try again.")
+            return battleship_run()
+        else:
+            return int(players)
+    else:
+        print("You didn't type any player amount! Try again.")
+        return battleship_run()
  
 class Game(object):
+    """_summary_
+
+    Args:
+        object (_type_): _description_
+    """
     def __init__(self, players):
         self.guesses = 5
         self.player_list = []
@@ -59,13 +88,16 @@ class Game(object):
         self.ship_row = rand.randint(0, 4)
         self.ship_col = rand.randint(0, 4)
 
-    """
-    Defining the many methods that makes the game work,
-    starting with the create_matrix where we take in the 
-    boards max x and max y to define its size.
-    """
-
     def create_matrix(self, max_x, max_y):
+        """_summary_
+
+        Args:
+            max_x (_type_): _description_
+            max_y (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         matrix = list(range(max_x))
         for x in matrix:
             matrix[x] = list(range(max_y))
@@ -73,15 +105,15 @@ class Game(object):
                 matrix[x][y] = "O"
         return c.deepcopy(matrix)
 
-    """
-    Defining the print_board function, here I respresent
-    x as rows
-    y as colums
-    """
-
     def print_board(self, board_in):
-        
-        
+        """_summary_
+
+        Args:
+            board_in (_type_): _description_
+
+        Returns:
+            _type_: _description_
+        """
         x = 0
         y = 0
         for column in board_in:
@@ -99,17 +131,29 @@ class Game(object):
         return None
     
     def already_guessed(self, row: int, col: int) -> bool:
+        """_summary_
+
+        Args:
+            row (int): _description_
+            col (int): _description_
+
+        Returns:
+            bool: _description_
+        """
         return self.board[row][col] == "X"
 
     def game_logic(self):
-        guess_row, guess_col = read_guess(self.already_guessed)
+        """_summary_
 
-        # I first did -1 here and spread out in the code. Very bad and confusing.
+        Returns:
+            _type_: _description_
+        """
+        guess_row, guess_col = read_guess(self.already_guessed)
         if (
             self.board[guess_row][guess_col]
             == self.board[self.ship_row][self.ship_col]
         ):
-            # if self.guess_row == self.ship_row and self.guess_col == self.ship_col:
+        
             return True
         else:
             if self.player_list[self.current_player - 1] > 0:
@@ -145,19 +189,6 @@ class Game(object):
 
 
 
-def battleship_run():
-    os.system("clear")
-    print("Please enter how many players are going to play:")
-    players = input("\n")
-    if len(players) > 0:
-        if int(players) < 0:
-            print("You can't have a negative amount of players. Try again.")
-            return battleship_run()
-        else:
-            return int(players)
-    else:
-        print("You didn't type any player amount! Try again.")
-        return battleship_run()
 
 
 def main() -> None:
