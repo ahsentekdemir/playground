@@ -2,6 +2,7 @@
 
 # Imports
 import copy as c
+from multiprocessing.sharedctypes import Value
 import os
 import random as rand
 
@@ -10,7 +11,7 @@ Defining the Game class to make it easier to
 understand the code further in the project
 """
 
-
+ 
 class Game(object):
     def __init__(self, players):
         self.guesses = 5
@@ -46,6 +47,8 @@ class Game(object):
     """
 
     def print_board(self, board_in):
+        
+        
         x = 0
         y = 0
         for column in board_in:
@@ -69,24 +72,30 @@ class Game(object):
     I also use recursive methods here to avoid using while loops.
     """
 
-    def user_input(self):
-        line = input("\n")
-        if len(line) != 0:
-            if int(line) > len(self.board):
-                print("That's not even in the ocean! Try again.", end="")
-                return self.user_input()
-            else:
-                return int(line) - 1
-        else:
-            print("You didn't type anything! Try again", end="")
-            return self.user_input()
 
-    """
-    I wanted to avoid retyping code as much as possible
-    so I did the above function and then created player_guesses
-    to take user input and sort it into guesses for row and column
-    As of writing this comment I'm avoiding writing any game logic in the function.
-    """
+    def read_int(prompt: str, min_value: int = 1, max_value: int = 5) -> int:
+        """read and integer between a min and max value.
+
+            Args:
+                prompt (str): prompt from user
+                min_value (int): minimum value
+                max_value (int): max value
+
+            Returns:
+                int: 
+        """ 
+        while True:
+            line = input(prompt)
+            try:
+                value = int(value)
+                if value < min_value:
+                    print(f"the min value is {min_value}! try again.")
+                elif value > max_value:
+                    print(f"the mx value is {max_value}! try again.")
+                else:
+                    return value
+            except ValueError:
+                print("Thats not number! try again!")
 
     def player_guesses(self):
         if self.player_list[self.current_player - 1] == 0:
@@ -165,7 +174,7 @@ class Game(object):
 """
 Defining the run function here to easier handle player input.
 Doing it this way avoids using confusing while loops entirely.
-"""
+"""78
 
 
 def battleship_run():
