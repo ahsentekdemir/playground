@@ -11,6 +11,30 @@ Defining the Game class to make it easier to
 understand the code further in the project
 """
 
+
+def read_int(prompt: str, min_value: int = 1, max_value: int = 5) -> int:
+    """read and integer between a min and max value.
+
+        Args:
+            prompt (str): prompt from user
+            min_value (int): minimum value
+            max_value (int): max value
+
+        Returns:
+            int: 
+    """ 
+    while True:
+        line = input(prompt)
+        try:
+            value = int(line)
+            if value < min_value:
+                print(f"the min value is {min_value}! try again.")
+            elif value > max_value:
+                print(f"the mx value is {max_value}! try again.")
+            else:
+                return value
+        except ValueError:
+                print("Thats not number! try again!")
  
 class Game(object):
     def __init__(self, players):
@@ -66,36 +90,11 @@ class Game(object):
         return None
 
     """
-    To avoid repeating the same code twice, I made the user_input method more generalized
+    To avoid repeating the same code twice, I maderead_int method more generalized
     and made a seperate method to take care of if its row or column thats being inputed.
     That way I can make a robust input check without having to repeat code.
     I also use recursive methods here to avoid using while loops.
     """
-
-
-    def read_int(prompt: str, min_value: int = 1, max_value: int = 5) -> int:
-        """read and integer between a min and max value.
-
-            Args:
-                prompt (str): prompt from user
-                min_value (int): minimum value
-                max_value (int): max value
-
-            Returns:
-                int: 
-        """ 
-        while True:
-            line = input(prompt)
-            try:
-                value = int(value)
-                if value < min_value:
-                    print(f"the min value is {min_value}! try again.")
-                elif value > max_value:
-                    print(f"the mx value is {max_value}! try again.")
-                else:
-                    return value
-            except ValueError:
-                print("Thats not number! try again!")
 
     def player_guesses(self):
         if self.player_list[self.current_player - 1] == 0:
@@ -108,14 +107,14 @@ class Game(object):
             )
 
             print("Player {}: Guess row: ".format(self.current_player), end="")
-            self.guess_row = self.user_input()
+            self.guess_row = read_int("guess row:", max_value=5) -1
 
             print("Player {}: Guess column: ".format(self.current_player), end="")
-            self.guess_col = self.user_input()
+            self.guess_col = read_int("guess col", max_value=5) -1
 
             if self.board[self.guess_row][self.guess_col] == "X":
                 print("You've already guessed on that row! Try again.")
-                return self.player_guesses()
+                return self.player_guesses("\n")
             else:
                 return None
 
@@ -192,11 +191,11 @@ def battleship_run():
         return battleship_run()
 
 
-"""
-Here is all that is left outside of functions and the game class. 
-Pretty easy to read if you ask me.
-"""
+def main() -> None:
+    os.system("cls")
+    player_count = read_int("pls how many players r gonna play", max_value=2)
+    battle_ship = Game(player_count)
+    battle_ship.main()
 
 if __name__ == "__main__":
-    battleship = Game(battleship_run())
-    battleship.main()
+    main()
