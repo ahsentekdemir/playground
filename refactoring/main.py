@@ -5,12 +5,23 @@ import copy as c
 from multiprocessing.sharedctypes import Value
 import os
 import random as rand
+from typing import Callable, Tuple
 
 """
 Defining the Game class to make it easier to 
 understand the code further in the project
 """
+def read_guess(guessed: Callable[[int, int], bool]) -> Tuple[int, int]:
+    while True:
+        # read the row and column
+        guess_row = read_int("guess row:", max_value=5) -1
+        guess_col = read_int("guess col", max_value=5) -1
 
+        if not guessed(guess_row, guess_col):
+            return guess_row, guess_col
+
+        
+        print("You've already guessed on that row! Try again.")
 
 def read_int(prompt: str, min_value: int = 1, max_value: int = 5) -> int:
     """read and integer between a min and max value.
@@ -47,8 +58,6 @@ class Game(object):
         self.board_visible = c.deepcopy(self.board)
         self.ship_row = rand.randint(0, 4)
         self.ship_col = rand.randint(0, 4)
-        self.guess_row = 0
-        self.guess_col = 0
 
     """
     Defining the many methods that makes the game work,
@@ -88,47 +97,16 @@ class Game(object):
             print()
             x += 1
         return None
-
-    """
-    To avoid repeating the same code twice, I maderead_int method more generalized
-    and made a seperate method to take care of if its row or column thats being inputed.
-    That way I can make a robust input check without having to repeat code.
-    I also use recursive methods here to avoid using while loops.
-    """
-
-    def player_guesses(self):
-        if self.player_list[self.current_player - 1] == 0:
-            return False
-        else:
-            print(
-                "Player {} has {} guesses left.".format(
-                    self.current_player, self.player_list[self.current_player - 1]
-                )
-            )
-
-            print("Player {}: Guess row: ".format(self.current_player), end="")
-            self.guess_row = read_int("guess row:", max_value=5) -1
-
-            print("Player {}: Guess column: ".format(self.current_player), end="")
-            self.guess_col = read_int("guess col", max_value=5) -1
-
-            if self.board[self.guess_row][self.guess_col] == "X":
-                print("You've already guessed on that row! Try again.")
-                return self.player_guesses("\n")
-            else:
-                return None
-
-    """
-    Seperating out the game_logic to try to make the main function as readable as possible.
-    This is also an exercise to practice writing recursive code instead of using while loops.
-    """
+    
+    def already_guessed(self, row: int, col: int) -> bool:
+        return self.board[row][col] == "X"
 
     def game_logic(self):
-        self.player_guesses()
+        guess_row, guess_col = read_guess(self.already_guessed)
 
         # I first did -1 here and spread out in the code. Very bad and confusing.
         if (
-            self.board[self.guess_row][self.guess_col]
+            self.board[guess_row][guess_col]
             == self.board[self.ship_row][self.ship_col]
         ):
             # if self.guess_row == self.ship_row and self.guess_col == self.ship_col:
@@ -136,8 +114,8 @@ class Game(object):
         else:
             if self.player_list[self.current_player - 1] > 0:
                 print("Sorry, you missed!")
-                self.board[self.guess_row][self.guess_col] = "X"
-                self.board_visible[self.guess_row][self.guess_col] = "X"
+                self.board[guess_row][guess_col] = "X"
+                self.board_visible[guess_row][guess_col] = "X"
                 self.player_list[self.current_player - 1] -= 1
                 self.print_board(self.board_visible)
 
@@ -150,10 +128,6 @@ class Game(object):
                 print("Player {} ran out of guesses!".format(self.current_player))
                 return False
 
-    """
-    Keeping the main function simple and easy to read by handling game logic
-    above and using return to see the condition of the game.
-    """
 
     def main(self):
         os.system("clear")
@@ -169,11 +143,6 @@ class Game(object):
             print("Game over! Player {} has lost!".format(self.current_player))
             self.print_board(self.board)
 
-
-"""
-Defining the run function here to easier handle player input.
-Doing it this way avoids using confusing while loops entirely.
-"""
 
 
 def battleship_run():
