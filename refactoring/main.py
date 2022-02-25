@@ -174,7 +174,7 @@ class Game(object):
 """
 Defining the run function here to easier handle player input.
 Doing it this way avoids using confusing while loops entirely.
-"""78
+"""
 
 
 def battleship_run():
